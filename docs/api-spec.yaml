@@ -1,0 +1,239 @@
+openapi: 3.0.3
+info:
+  title: Swagger TUI API
+  description: |-
+    Simple Api to store and retrieve addresses per customer
+  termsOfService: https://github.com/amg/tui-simpleapi-cdk?tab=MIT-1-ov-file
+  license:
+    name: MIT
+    url: https://github.com/amg/tui-simpleapi-cdk?tab=MIT-1-ov-file
+  version: 1.0.0
+externalDocs:
+  description: Find out more about Swagger
+  url: http://swagger.io
+servers:
+  - url: <none hosted currently>
+tags:
+  - name: user
+    description: Create, list and delete users 
+  - name: address
+    description: Create, list and delete addresses
+paths:
+  /addresses?userId={id}:
+    get:
+      tags:
+        - address
+      summary: Get all addresses that exist
+      description: Get all addresses for all users unless specified in param
+      parameters:
+        - in: headers
+          name: X-API-KEY
+          description: API key to access the endpoint
+          schema:
+            type: string
+          required: true
+        - in: query
+          name: userId
+          schema:
+            type: string
+          required: false
+          description: string id of the user to get addresses for
+        - in: query
+          name: suburb
+          schema:
+            type: string
+          required: false
+          description: filter by suburb
+        - in: query
+          name: postcode
+          schema:
+            type: string
+          required: false
+          description: filter by postcode
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Address'
+        '400':
+          description: Invalid input
+    post:
+      tags:
+        - address
+      summary: Add an address
+      description: Adds an address for the user
+      parameters:
+        - in: headers
+          name: X-API-KEY
+          description: API key to access the endpoint
+          schema:
+            type: string
+          required:
+            true
+        - in: query
+          name: userId
+          schema:
+            type: string
+          required: true
+          description: string id of the user to get addresses for
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Address'
+        '400':
+          description: Invalid input
+        '403':
+          description: Forbidden
+  /addresses/{id}?userId={id}:
+    get:
+      tags:
+        - address
+      summary: Get an address by id
+      description: Get an address by id
+      parameters:
+        - in: headers
+          name: X-API-KEY
+          description: API key to access the endpoint
+          schema:
+            type: string
+          required: true
+        - in: query
+          name: userId
+          schema:
+            type: string
+          required: true
+          description: string id of the user to get addresses for
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/Address'
+        '400':
+          description: Invalid input
+    delete:
+      tags:
+        - address
+      summary: Delete an address
+      description: Delete an address for the user
+      parameters:
+        - in: headers
+          name: X-API-KEY
+          description: API key to access the endpoint
+          schema:
+            type: string
+          required: true
+        - in: query
+          name: userId
+          schema:
+            type: string
+          required: true
+          description: string id of the user to get addresses for
+      responses:
+        '200':
+          description: Successful operation
+        '400':
+          description: Invalid input
+        '403':
+          description: Forbidden
+  /users:
+    get:
+      tags:
+        - user
+      summary: Get all users that exist
+      description: Get all users
+      parameters:
+        - in: headers
+          name: X-API-KEY
+          description: API key to access the endpoint
+          schema:
+            type: string
+          required:
+            true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+        '400':
+          description: Invalid input
+    post:
+      tags:
+        - user
+      summary: Create a customer
+      description: Creates a customer and returns in the response
+      parameters:
+        - in: headers
+          name: X-API-KEY
+          description: API key to access the endpoint
+          schema:
+            type: string
+          required:
+            true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '403':
+          description: Forbidden
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: 'f8a3f4ac-a87a-42ed-b614-bd90a9972a57'
+        firstName:
+          type: string
+          example: Vi
+        lastName:
+          type: string
+          example: Kiramman
+    Address:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: 0d90e301-4f24-4992-b2ce-e712251fcdef
+        userId: 
+          type: string
+          format: uuid
+          example: 1asdf324-4f24-4992-b2ce-e712251fcdef
+        name:
+          type: string
+          example: home
+        street:
+          type: string
+          example: Collins Square, Level 31, Tower 5/727 Collins St
+        suburb:
+          type: string
+          example: Docklands
+        postcode:
+          type: string
+          example: 3008
+        state:
+          type: string
+          example: VIC
+        country:
+          type: string
+          example: Australia
