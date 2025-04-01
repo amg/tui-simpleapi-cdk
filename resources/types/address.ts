@@ -7,7 +7,7 @@ export interface Address {
   country: string; // Australia
 }
 
-export function validateAddress(body: string): Address {
+export function parseAddress(body: string): Address {
   const parsed = JSON.parse(body) as Address;
   // ignore anything else explicitly
   return {
