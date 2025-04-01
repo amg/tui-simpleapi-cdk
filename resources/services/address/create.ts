@@ -72,9 +72,7 @@ async function create(body: string | null, userId: string | undefined) {
       return {
         statusCode: 400,
         body: JSON.stringify({
-          message:
-            e.message ??
-            "Internal Server Error. Something didn't work with Google validator",
+          message: e.message ?? "Internal Server Error. Something went wrong",
         }),
       };
     });
