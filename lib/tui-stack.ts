@@ -1,4 +1,11 @@
-import { CfnOutput, RemovalPolicy, Stack, StackProps } from "aws-cdk-lib";
+import {
+  CfnOutput,
+  RemovalPolicy,
+  SecretValue,
+  Stack,
+  StackProps,
+} from "aws-cdk-lib";
+import { CfnParameter } from "aws-cdk-lib";
 import { Construct } from "constructs";
 import { AttributeType, Table, BillingMode } from "aws-cdk-lib/aws-dynamodb";
 import {
@@ -10,7 +17,9 @@ import {
   UsagePlan,
 } from "aws-cdk-lib/aws-apigateway";
 import { NodejsFunction } from "aws-cdk-lib/aws-lambda-nodejs";
-import { Env } from "../resources/types/env";
+import { Env, validateEnvironment } from "../resources/types/env";
+import * as secretsmanager from "aws-cdk-lib/aws-secretsmanager";
+import { addressApiKey } from "../resources/helpers/secretsManager";
 
 /**
  * Main stack for the simple API service
@@ -21,7 +30,11 @@ export class TuiStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    const environment = Env.Dev;
+    const envParam = new CfnParameter(this, "env", {
+      type: "String",
+    });
+    const environment =
+      validateEnvironment(envParam.valueAsString) ?? Env.Staging;
 
     // DynamoDB tables
     const dbUserTable = new Table(this, `${environment}-UserTable`, {
@@ -66,6 +79,7 @@ export class TuiStack extends Stack {
         entry: "resources/endpoints/addresses.ts",
         handler: "handler",
         environment: {
+          ENV: environment,
           USER_TABLE_NAME: dbUserTable.tableName,
           ADDRESS_TABLE_NAME: dbAddressTable.tableName,
         },
@@ -79,6 +93,7 @@ export class TuiStack extends Stack {
         entry: "resources/endpoints/address.ts",
         handler: "handler",
         environment: {
+          ENV: environment,
           USER_TABLE_NAME: dbUserTable.tableName,
           ADDRESS_TABLE_NAME: dbAddressTable.tableName,
         },
@@ -89,6 +104,7 @@ export class TuiStack extends Stack {
       entry: "resources/endpoints/users.ts",
       handler: "handler",
       environment: {
+        ENV: environment,
         USER_TABLE_NAME: dbUserTable.tableName,
         ADDRESS_TABLE_NAME: dbAddressTable.tableName,
       },
@@ -98,6 +114,7 @@ export class TuiStack extends Stack {
       entry: "resources/endpoints/user.ts",
       handler: "handler",
       environment: {
+        ENV: environment,
         USER_TABLE_NAME: dbUserTable.tableName,
         ADDRESS_TABLE_NAME: dbAddressTable.tableName,
       },
@@ -109,6 +126,28 @@ export class TuiStack extends Stack {
       table.grantReadWriteData(usersLambda);
       table.grantReadWriteData(userLambda);
     });
+
+    // GOOGLE API secret
+    const parameterName = new CfnParameter(this, "googleApiKey", {
+      type: "String",
+      noEcho: true,
+    });
+
+    if (parameterName) {
+      const googleAddressApiSecret = new secretsmanager.Secret(
+        this,
+        `${environment}-secret-google/AddressAPIKey`,
+        {
+          secretName: addressApiKey(environment),
+          // TODO: shouldn't be using this but for simplicity of the script it will suffice
+          secretStringValue: SecretValue.unsafePlainText(
+            parameterName.valueAsString
+          ),
+        }
+      );
+
+      googleAddressApiSecret.grantRead(addressesLambda);
+    }
 
     const stagedApiRoot = api.root.addResource(environment);
 

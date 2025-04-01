@@ -16,7 +16,9 @@ See ./docs folder that contains an openapi spec and postman collection + environ
 
 1. `npm install` to get all dependencies
 2. prepare main resources like bucket that stores functions `cdk bootstrap`
-3. deploy project specific resources `cdk deploy`
+3. deploy project specific resources `cdk --parameters env=<dev/staging> --parameters googleApiKey=<required_key_staging> deploy`
+   1. googleApiKey is cloud Address Validation API key
+   2. this key is populated by CDK into Secrets Manager once passed in (not ideal as it will be available in Cloud formation but ok for non prod)
 
 ## Testing
 

@@ -5,9 +5,9 @@ export enum Env {
 
 export function validateEnvironment(env: string): Env | null {
   switch (env) {
-    case Env.Dev:
+    case "dev":
       return Env.Dev;
-    case Env.Staging:
+    case "staging":
       return Env.Staging;
     default:
       return null;

@@ -14,7 +14,7 @@ export function addressValidator(env: Env): AddressValidator {
       return new DummyAddressValidator();
     }
     case Env.Staging: {
-      return new GoogleAddressValidator();
+      return new GoogleAddressValidator(env);
     }
   }
 }
