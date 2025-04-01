@@ -22,7 +22,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"name\": \"home\",\n    \"street\": \"Somewhere street\",\n    \"suburb\": \"Docklands\",\n    \"postcode\": \"3008\",\n    \"state\": \"VIC\",\n    \"country\": \"Australia\"\n}",
+							"raw": "{\n    \"name\": \"home\",\n    \"street\": \"some street\",\n    \"suburb\": \"some suburb\",\n    \"postcode\": \"3008\",\n    \"state\": \"VIC\",\n    \"country\": \"Australia\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -30,12 +30,13 @@
 							}
 						},
 						"url": {
-							"raw": "https://{{baseUrl}}/addresses?userId={{userId}}",
+							"raw": "https://{{baseUrl}}/{{env}}/addresses?userId={{userId}}",
 							"protocol": "https",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
+								"{{env}}",
 								"addresses"
 							],
 							"query": [
@@ -60,18 +61,25 @@
 							}
 						],
 						"url": {
-							"raw": "https://{{baseUrl}}/addresses?userId={{userId}}",
+							"raw": "https://{{baseUrl}}/{{env}}/addresses",
 							"protocol": "https",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
+								"{{env}}",
 								"addresses"
 							],
 							"query": [
 								{
 									"key": "userId",
-									"value": "{{userId}}"
+									"value": "{{userId}}",
+									"disabled": true
+								},
+								{
+									"key": "suburb",
+									"value": "Docklands",
+									"disabled": true
 								}
 							]
 						}
@@ -90,13 +98,13 @@
 							}
 						],
 						"url": {
-							"raw": "https://{{baseUrl}}/addresses?userId={{userId}}",
+							"raw": "https://{{baseUrl}}/{{env}}addresses?userId={{userId}}",
 							"protocol": "https",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
-								"addresses"
+								"{{env}}addresses"
 							],
 							"query": [
 								{
@@ -120,13 +128,13 @@
 							}
 						],
 						"url": {
-							"raw": "https://{{baseUrl}}/addresses/{{addressId}}?userId={{userId}}",
+							"raw": "https://{{baseUrl}}/{{env}}addresses/{{addressId}}?userId={{userId}}",
 							"protocol": "https",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
-								"addresses",
+								"{{env}}addresses",
 								"{{addressId}}"
 							],
 							"query": [
@@ -151,20 +159,20 @@
 							}
 						],
 						"url": {
-							"raw": "https://{{baseUrl}}/addresses/{{addressId}}",
+							"raw": "https://{{baseUrl}}/{{env}}/addresses/{{addressId}}?userId={{userId}}",
 							"protocol": "https",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
+								"{{env}}",
 								"addresses",
 								"{{addressId}}"
 							],
 							"query": [
 								{
-									"key": "",
-									"value": "",
-									"disabled": true
+									"key": "userId",
+									"value": "{{userId}}"
 								}
 							]
 						}
@@ -197,12 +205,13 @@
 							}
 						},
 						"url": {
-							"raw": "https://{{baseUrl}}/users",
+							"raw": "https://{{baseUrl}}/{{env}}/users",
 							"protocol": "https",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
+								"{{env}}",
 								"users"
 							]
 						}
@@ -221,19 +230,14 @@
 							}
 						],
 						"url": {
-							"raw": "https://{{baseUrl}}/addresses?userId={{userId}}",
+							"raw": "https://{{baseUrl}}/{{env}}/users",
 							"protocol": "https",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
-								"addresses"
-							],
-							"query": [
-								{
-									"key": "userId",
-									"value": "{{userId}}"
-								}
+								"{{env}}",
+								"users"
 							]
 						}
 					},
@@ -251,20 +255,15 @@
 							}
 						],
 						"url": {
-							"raw": "https://{{baseUrl}}/addresses/{{addressId}}?userId={{userId}}",
+							"raw": "https://{{baseUrl}}/{{env}}/users/{{userId}}",
 							"protocol": "https",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
-								"addresses",
-								"{{addressId}}"
-							],
-							"query": [
-								{
-									"key": "userId",
-									"value": "{{userId}}"
-								}
+								"{{env}}",
+								"users",
+								"{{userId}}"
 							]
 						}
 					},
@@ -282,12 +281,13 @@
 							}
 						],
 						"url": {
-							"raw": "https://{{baseUrl}}/users/{{userId}}",
+							"raw": "https://{{baseUrl}}/{{env}}/users/{{userId}}",
 							"protocol": "https",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
+								"{{env}}",
 								"users",
 								"{{userId}}"
 							],
@@ -303,6 +303,48 @@
 					"response": []
 				}
 			]
+		},
+		{
+			"name": "Google Validate",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"address\": {\n    \"addressLines\": [\n        \"some Street\"\n    ],\n    \"postalCode\": \"3008\",\n    \"administrativeArea\": \"VIC\"\n  }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://addressvalidation.googleapis.com/v1:validateAddress?key={{googleApiKey}}",
+					"protocol": "https",
+					"host": [
+						"addressvalidation",
+						"googleapis",
+						"com"
+					],
+					"path": [
+						"v1:validateAddress"
+					],
+					"query": [
+						{
+							"key": "key",
+							"value": "{{googleApiKey}}"
+						}
+					]
+				}
+			},
+			"response": []
 		}
 	]
 }

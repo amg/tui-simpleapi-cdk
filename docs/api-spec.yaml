@@ -12,7 +12,7 @@ externalDocs:
   description: Find out more about Swagger
   url: http://swagger.io
 servers:
-  - url: <none hosted currently>
+  - url: https://<root>/<dev|staging>
 tags:
   - name: user
     description: Create, list and delete users 
